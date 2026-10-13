@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f5ef">
+  <title>中文字抽抽樂</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20231f;
+      --muted: #70756c;
+      --accent: #436b52;
+      --accent-dark: #31513d;
+      --paper: #fffefa;
+      --line: #e4e5dc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 15% 10%, #e7eddf 0, transparent 34%),
+        radial-gradient(ellipse at 90% 90%, #f0e9d9 0, transparent 30%),
+        #f7f5ef;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC",
+                   "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+    .app {
+      width: min(100%, 680px);
+      padding: clamp(24px, 6vw, 48px);
+      background: rgba(255, 254, 250, .94);
+      border: 1px solid rgba(228, 229, 220, .9);
+      border-radius: 28px;
+      box-shadow: 0 24px 70px rgba(39, 47, 35, .09);
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: -.04em;
+    }
+    .intro {
+      margin: 14px 0 30px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: .95rem;
+      font-weight: 750;
+    }
+    textarea {
+      display: block;
+      width: 100%;
+      min-height: 126px;
+      resize: vertical;
+      padding: 16px 18px;
+      border: 1.5px solid var(--line);
+      border-radius: 16px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(67, 107, 82, .12);
+    }
+    .hint {
+      margin: 9px 0 20px;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+    button {
+      width: 100%;
+      min-height: 54px;
+      padding: 14px 20px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 750;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+    }
+    button:hover { background: var(--accent-dark); }
+    button:active { transform: scale(.99); }
+    button:focus-visible { outline: 3px solid #a9c5af; outline-offset: 3px; }
+    .result {
+      min-height: 235px;
+      margin-top: 24px;
+      padding: 22px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border: 1px dashed #d9ddcf;
+      border-radius: 20px;
+      background: #f8f9f4;
+    }
+    .result-label {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+    #chosenCharacter {
+      min-height: 1.1em;
+      color: var(--accent-dark);
+      font-size: clamp(6rem, 27vw, 30rem);
+      font-weight: 800;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+    #status {
+      min-height: 1.5em;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    @media (min-width: 560px) {
+      .result { min-height: 280px; }
+    }
+    @media (max-width: 420px) {
+      body { padding: 14px; }
+      .app { border-radius: 22px; }
+      .intro { margin-bottom: 24px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <p class="eyebrow">Chinese Character Picker</p>
+    <h1>中文字抽抽樂</h1>
+    <p class="intro">輸入一句中文，按一下按鈕，隨機抽出其中一個中文字。試試手氣！</p>
+
+    <form id="pickerForm">
+      <label for="sentence">輸入一句中文字</label>
+      <textarea id="sentence" placeholder="例如：春風得意馬蹄疾，一日看盡長安花。" required></textarea>
+      <p class="hint">標點符號和空格會自動略過，只會抽取中文字或其他文字字元。</p>
+      <button type="submit">🎲 隨機抽一個字</button>
+    </form>
+
+    <section class="result" aria-live="polite" aria-atomic="true">
+      <div>
+        <p class="result-label">今次抽中</p>
+        <div id="chosenCharacter">？</div>
+        <p id="status">輸入句子，開始抽字吧。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('pickerForm');
+    const input = document.getElementById('sentence');
+    const chosenCharacter = document.getElementById('chosenCharacter');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      // Array.from 能正確處理大部分 Unicode 字元；略過空白及標點符號。
+      const characters = Array.from(input.value).filter((char) =>
+        !/[\\s\\p{P}\\p{S}]/u.test(char)
+      );
+
+      if (characters.length === 0) {
+        chosenCharacter.textContent = '？';
+        status.textContent = '請先輸入至少一個中文字。';
+        input.focus();
+        return;
+      }
+
+      const index = Math.floor(Math.random() * characters.length);
+      chosenCharacter.textContent = characters[index];
+      status.textContent = `已從 ${characters.length} 個字元中隨機抽出一個。`;
+    });
+  </script>
+</body>
+</html>
