@@ -41,7 +41,7 @@
     .eyebrow {
       margin: 0 0 12px;
       color: var(--accent);
-      font-size: .78rem;
+      font-size: 2rem;
       font-weight: 800;
       letter-spacing: .16em;
       text-transform: uppercase;
@@ -67,7 +67,7 @@
     textarea {
       display: block;
       width: 100%;
-      min-height: 126px;
+      min-height: 50px;
       resize: vertical;
       padding: 16px 18px;
       border: 1.5px solid var(--line);
@@ -77,7 +77,7 @@
       color: var(--ink);
       font: inherit;
       font-size: 1.1rem;
-      line-height: 1.7;
+      line-height: 1.2;
       transition: border-color .2s, box-shadow .2s;
     }
     textarea:focus {
@@ -151,10 +151,7 @@
 </head>
 <body>
   <main class="app">
-    <p class="eyebrow">Chinese Character Picker</p>
-    <h1>中文字抽抽樂</h1>
-    <p class="intro">輸入一句中文，按一下按鈕，隨機抽出其中一個中文字。試試手氣！</p>
-
+    <p class="eyebrow">中文字抽抽樂</p>
     <form id="pickerForm">
       <label for="sentence">輸入一句中文字</label>
       <textarea id="sentence" placeholder="例如：春風得意馬蹄疾，一日看盡長安花。" required></textarea>
